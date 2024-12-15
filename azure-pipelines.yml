@@ -1,0 +1,34 @@
+
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+
+steps:
+
+- task: DotNetCoreCLI@2
+  displayName: "compilando"
+  inputs:
+    command: 'build'
+    projects: '**/SistemaVenta.API/*.csproj'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/SistemaVenta.API'
+
+- task: DotNetCoreCLI@2
+  displayName: "publicando"
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    workingDirectory: '$(System.DefaultWorkingDirectory)/SistemaVenta.API'
+
+- task: AzureRmWebAppDeployment@4
+  displayName: "desplegando"
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Azure subscription 1(1)(d4521b3b-5526-4108-a9b6-4090cb1d2c55)'
+    appType: 'webAppLinux'
+    WebAppName: 'backendnetdeyved'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'

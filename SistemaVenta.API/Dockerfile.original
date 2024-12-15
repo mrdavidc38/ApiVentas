@@ -1,0 +1,19 @@
+
+from mcr.microsoft.com/dotnet/sdk:8.0 as build
+workdir /webapp
+
+expose 80
+expose 10125
+
+copy ../ ./
+run dotnet restore /webapp/SistemaVenta.API.csproj
+
+
+run dotnet publish /webapp/SistemaVenta.API.csproj -c release -o out
+
+
+from mcr.microsoft.com/dotnet/sdk:8.0 as runtime
+workdir /webapp
+copy --from=build /webapp/out .
+ENTRYPOINT ["dotnet", "SistemaVenta.API.dll"]
+
